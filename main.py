@@ -62,8 +62,6 @@ u2 = u2.resize((450,450),Image.ANTIALIAS)
 u2 = ImageTk.PhotoImage(u2)
 Label(rootg,image=u2).place(x=0, y=0, width=450, height=450)
 
-#img = cv2.imread(Imgarr0)
-#gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 img = cv2.resize(Imgarr0, (300, 250))
 im = Image.fromarray(img)
 imgtk = ImageTk.PhotoImage(image=im) 

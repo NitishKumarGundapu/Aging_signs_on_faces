@@ -1,57 +1,73 @@
-import os
 import cv2
+from tkinter.ttk import *
+from tkinter import *
 import warnings
-import numpy as np
-from keras.models import Sequential
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import to_categorical
-from sklearn.model_selection import train_test_split
-from keras.preprocessing.image import ImageDataGenerator
-from keras.layers import Dense,Flatten,Conv2D,MaxPooling2D,Dropout
+from PIL import ImageTk,Image
+from keras.models import model_from_json
 
-warnings.simplefilter("ignore")
+warnings.filterwarnings("ignore")
 
-def preprocessing(image):
-    image=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    image=image/255
-    return image
+json_file=open(r"models/dark_s.json","r")
+loaded_model_json=json_file.read()
+json_file.close()
+loaded_model=model_from_json(loaded_model_json)
+loaded_model.load_weights("models/dark_s.h5")
 
-for a in os.listdir('datasets/'):
-    data = np.load(r'datasets/'+str(a))
-    features , target = data['arr_0'],data['arr_1']
+json_file=open(r"models/eyes_d.json","r")
+loaded_model_json=json_file.read()
+json_file.close()
+loaded_model1=model_from_json(loaded_model_json)
+loaded_model1.load_weights("models/eyes_d.h5")
 
-    features_train,features_test,target_train,target_test=train_test_split(features,target,test_size=0.2)
+json_file=open(r"models/wrinkl.json","r")
+loaded_model_json=json_file.read()
+json_file.close()
+loaded_model2=model_from_json(loaded_model_json)
+loaded_model2.load_weights("models/wrinkl.h5")
 
-    print(features_train.shape)
-    print(target_train.shape)
-    print(features_test.shape)
-    print(target_test.shape)
 
-    dataGen=ImageDataGenerator(rotation_range=10,width_shift_range=0.1,height_shift_range=0.1,zoom_range=0.2,shear_range=0.1)
-    batches=dataGen.flow(features_train,target_train,batch_size=20)
-    images,labels=next(batches)
+Imgarr0 = cv2.imread(r"test_images/56.jpg")
+Imgarr1=cv2.resize(Imgarr0,(50,50))
+Imgarr = Imgarr1.reshape(-1, 50, 50, 3)
 
-    target_train=to_categorical(target_train)
+l = []
 
-    model=Sequential()
-    model.add(Conv2D(100,(3,3),activation="relu",input_shape=(50,50,3)))
-    model.add(Conv2D(200,(3,3),activation="relu"))
-    model.add(MaxPooling2D((2,2)))
-    model.add(Conv2D(100,(3,3),activation="relu"))
-    model.add(Conv2D(100,(3,3),activation="relu"))
-    model.add(Conv2D(100,(3,3),activation="relu"))
-    model.add(MaxPooling2D((2,2)))
-    model.add(Dropout(0.5))
-    model.add(Flatten())
-    model.add(Dense(500,activation="relu"))
-    model.add(Dense(2,activation="softmax"))
+result = loaded_model.predict(Imgarr)
+result = result[0]
+if result[0] >= result[1]:
+    l.append("dark spots")
+else:
+    l.append("no dark spots")
 
-    model.compile(Adam(lr=0.001),loss="categorical_crossentropy",metrics=["accuracy"])
+result = loaded_model1.predict(Imgarr)
+result = result[0]
+if result[0] >= result[1]:
+    l.append("no puffy eyes")
+else:
+    l.append("puffy eyes")
 
-    model.fit(dataGen.flow(features_train,target_train,batch_size=20),epochs=20)
+result = loaded_model2.predict(Imgarr)
+result = result[0]
+if result[0] >= result[1]:
+    l.append("no wrinkles on face")
+else:
+    l.append("wrinkles on face")
 
-    model_json=model.to_json()
-    with open(str(a[:6])+".json","w") as abc:
-        abc.write(model_json)
-        abc.close
-    model.save_weights("models/"+str(a[:6])+".h5")
+rootg = Tk()
+rootg.resizable(False,False)
+rootg.geometry('450x450')
+rootg.title('Facial Predictions')
+u2 = Image.open("images/images_2.jpg")
+u2 = u2.resize((450,450),Image.ANTIALIAS)
+u2 = ImageTk.PhotoImage(u2)
+Label(rootg,image=u2).place(x=0, y=0, width=450, height=450)
+
+#img = cv2.imread(Imgarr0)
+#gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+img = cv2.resize(Imgarr0, (300, 250))
+im = Image.fromarray(img)
+imgtk = ImageTk.PhotoImage(image=im) 
+Label(rootg, image=imgtk).place(x=70,y=50)
+
+Label(rootg, text = "Predictions are : "+str(l)).place(x=50,y=350)
+rootg.mainloop()

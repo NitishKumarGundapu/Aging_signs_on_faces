@@ -1,7 +1,8 @@
-import tensorflow as tf
-major_version = int(tf.__version__.split(".")[0])
-if major_version >= 2:
-    from tensorflow.python import _pywrap_util_port
-    print("MKL enabled:", _pywrap_util_port.IsMklEnabled())
-else:
-    print("MKL enabled:", tf.pywrap_tensorflow.IsMklEnabled()) 
+from keras.models import model_from_json
+
+json_file=open(r"models/dark_s.json","r")
+loaded_model_json=json_file.read()
+json_file.close()
+loaded_model=model_from_json(loaded_model_json)
+loaded_model.load_weights("models/dark_s.h5")
+print("yes")

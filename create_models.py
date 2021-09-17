@@ -51,7 +51,7 @@ for a in os.listdir('datasets/'):
     model.fit(dataGen.flow(features_train,target_train,batch_size=20),epochs=20)
 
     model_json=model.to_json()
-    with open(str(a[:6])+".json","w") as abc:
+    with open("models/"+str(a[:6])+".json","w") as abc:
         abc.write(model_json)
         abc.close
     model.save_weights("models/"+str(a[:6])+".h5")

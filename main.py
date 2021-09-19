@@ -25,8 +25,8 @@ json_file.close()
 loaded_model2=model_from_json(loaded_model_json)
 loaded_model2.load_weights("models/wrinkl.h5")
 
-
-Imgarr0 = cv2.imread(r"test_images/56.jpg")
+a = input("enter the Image name : ")
+Imgarr0 = cv2.imread(r"test_images/"+str(a))
 Imgarr1=cv2.resize(Imgarr0,(50,50))
 Imgarr = Imgarr1.reshape(-1, 50, 50, 3)
 

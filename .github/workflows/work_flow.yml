@@ -24,3 +24,4 @@ jobs:
     - name: Running the code
       run: |
         python create_datasets.py
+        python create_models.py

@@ -10,12 +10,9 @@ from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Dense,Flatten,Conv2D,MaxPooling2D,Dropout
 
-warnings.simplefilter("ignore")
-
 def preprocessing(image):
     image=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    image=image/255
-    return image
+    return image/255
 
 for a in os.listdir('datasets/'):
     data = np.load(r'datasets/'+str(a))

@@ -17,7 +17,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install numpy
-        pip install tkinter
         pip install pillow
         pip install tensorflow
         pip install scikit-learn

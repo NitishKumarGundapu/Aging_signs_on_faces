@@ -23,4 +23,5 @@ jobs:
         pip install scikit-learn
     - name: Running the code
       run: |
+        python create_datasets.py
         python main.py

@@ -2,7 +2,6 @@ import cv2
 from tkinter.ttk import *
 from tkinter import *
 import warnings
-from PIL import ImageTk,Image
 from keras.models import model_from_json
 
 warnings.filterwarnings("ignore")

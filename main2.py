@@ -4,6 +4,8 @@ from tkinter import *
 import warnings
 from PIL import ImageTk,Image
 from keras.models import model_from_json
+from tkinter import messagebox as tk1
+from tkinter.filedialog import askopenfile,askopenfilenames
 
 warnings.filterwarnings("ignore")
 
@@ -25,47 +27,42 @@ json_file.close()
 loaded_model2=model_from_json(loaded_model_json)
 loaded_model2.load_weights("models/wrinkl.h5")
 
+def predict(Imgarr):
+    l = []
+    result = loaded_model.predict(Imgarr)
+    result = result[0]
+    if result[0] >= result[1]:
+        l.append("dark spots")
+    else:
+        l.append("no dark spots")
+
+    result = loaded_model1.predict(Imgarr)
+    result = result[0]
+    if result[0] >= result[1]:
+        l.append("no puffy eyes")
+    else:
+        l.append("puffy eyes")
+
+    result = loaded_model2.predict(Imgarr)
+    result = result[0]
+    if result[0] >= result[1]:
+        l.append("no wrinkles on face")
+    else:
+        l.append("wrinkles on face")
+    return l
+
+
 a = "56.jpg"
 Imgarr0 = cv2.imread(r"test_images/"+str(a))
 Imgarr1=cv2.resize(Imgarr0,(50,50))
 Imgarr = Imgarr1.reshape(-1, 50, 50, 3)
 
-l = []
-
-result = loaded_model.predict(Imgarr)
-result = result[0]
-if result[0] >= result[1]:
-    l.append("dark spots")
-else:
-    l.append("no dark spots")
-
-result = loaded_model1.predict(Imgarr)
-result = result[0]
-if result[0] >= result[1]:
-    l.append("no puffy eyes")
-else:
-    l.append("puffy eyes")
-
-result = loaded_model2.predict(Imgarr)
-result = result[0]
-if result[0] >= result[1]:
-    l.append("no wrinkles on face")
-else:
-    l.append("wrinkles on face")
 
 rootg = Tk()
-rootg.resizable(False,False)
-rootg.geometry('450x450')
 rootg.title('Facial Predictions')
-u2 = Image.open("images/images_2.jpg")
-u2 = u2.resize((450,450),Image.ANTIALIAS)
-u2 = ImageTk.PhotoImage(u2)
-Label(rootg,image=u2).place(x=0, y=0, width=450, height=450)
+Imgarr = StringVar()
 
-img = cv2.resize(Imgarr0, (300, 250))
-im = Image.fromarray(img)
-imgtk = ImageTk.PhotoImage(image=im) 
-Label(rootg, image=imgtk).place(x=70,y=50)
+a = askopenfile(parent=rootg,initialdir='test_images/',initialfile='nice')
 
-Label(rootg, text = "Predictions are : "+str(l)).place(x=50,y=350)
+Button(rootg, text="Upload_image", command=upload_image)
 rootg.mainloop()
